@@ -1,6 +1,6 @@
-# 🗺️ Proceso: DC_DPA_ECU
+# 🗺️ Macroproyecto: Data Ingestion - DPA Ecuador
 
-Este repositorio contiene la lógica de automatización para la ingesta de capas geográficas de la División Político Administrativa (DPA) de Ecuador en **PostgreSQL/PostGIS**.
+Este repositorio contiene el macroproyecto de ingesta de datos, con el subproceso de automatización para la carga de capas geográficas de la División Político Administrativa (DPA) de Ecuador en **PostgreSQL/PostGIS**.
 
 ---
 
@@ -8,6 +8,7 @@ Este repositorio contiene la lógica de automatización para la ingesta de capas
 | Fecha | Autor | Descripción / Motivo |
 | :--- | :--- | :--- |
 | 2026-02-04 | Diego Cuasapaz | Creación inicial del proceso y documentación base. |
+| 2026-02-04 | Diego Cuasapaz | Reorganización de directorios y actualización de documentación considerando data_ingestion como macroproyecto.
 
 ---
 
@@ -20,7 +21,7 @@ El script `load_shape.sh` automatiza la conversión de archivos Shapefile (.shp)
 
 ### **Ubicación del Binario**
 El script debe ejecutarse desde la carpeta de binarios del proyecto:  
-`📂 /home/dcuasapaz/git/dbeaver/bin`
+`📂 /home/dcuasapaz/git/dbeaver/data_ingestion/postgis_dpa/bin`
 
 ### **Comando de ejecución**
 ```bash
@@ -44,7 +45,7 @@ El script requiere ***3 parámetros obligatorios** para su correcto funcionamien
 El flujo de datos depende de una estructura de directorios estandarizada basada en la variable raíz ` $VAL_RUTA `.
 
 ### 1. Ruta de Fuentes (Input)
-* **Directorio Raíz:** ` $VAL_RUTA ` → /home/dcuasapaz/git/dbeaver
+* **Directorio Raíz:** ` $VAL_RUTA ` → /home/dcuasapaz/git/dbeaver/data_ingestion/postgis_dpa
 * **Directorio de Fuentes:** ` $VAL_RUTA `/fnt/
 * **Patrón de búsqueda dinámico:** ` $VAL_RUTA `/fnt/XXXXXXXX/$2.shp
 
@@ -164,18 +165,20 @@ Además del cargador de Shapefiles, el repositorio incluye scripts SQL para oper
 ```
 dbeaver/
 ├── README.md                          # Este archivo
-├── bin/
-│   └── load_shape.sh                  # Script principal de carga
-├── Scripts/
-│   ├── create_dpa_ecu.sql             # Setup DPA Ecuador
-│   ├── postgis.sql                    # Instalación PostGIS
-│   └── postgis_ecuador_continental.sql # Datos continentales
-└── fnt/                               # Datos fuente (Shapefiles)
-    ├── DST_CRC/                       # Distritos y Circunscripciones
-    ├── INEC2012/                      # Censo 2012
-    │   ├── EcdCntSmp/
-    │   └── EcdCntSmpGlp/
-    └── SHP/                           # Capas nacionales
+└── data_ingestion/                    # Macroproyecto de ingesta de datos
+    └── postgis_dpa/                   # Subproceso DPA Ecuador
+        ├── bin/
+        │   └── load_shape.sh          # Script principal de carga
+        ├── Scripts/
+        │   ├── create_dpa_ecu.sql     # Setup DPA Ecuador
+        │   ├── postgis.sql            # Instalación PostGIS
+        │   └── postgis_ecuador_continental.sql # Datos continentales
+        └── fnt/                       # Datos fuente (Shapefiles)
+            ├── DST_CRC/               # Distritos y Circunscripciones
+            ├── INEC2012/              # Censo 2012
+            │   ├── EcdCntSmp/
+            │   └── EcdCntSmpGlp/
+            └── SHP/                   # Capas nacionales
 ```
 
 ---
@@ -184,11 +187,11 @@ dbeaver/
 
 Para consultas o reportes de errores relacionados con este proceso:
 - **Responsable:** Diego Cuasapaz
-- **Proyecto:** DC_DPA_ECU (División Político Administrativa de Ecuador)
+- **Proyecto:** Data Ingestion - DPA Ecuador
 - **Última actualización:** 2026-02-04
 
 ---
-***Documentación técnica - Proyecto DPA Ecuador***
+***Documentación técnica - Macroproyecto Data Ingestion - DPA Ecuador***
 
 _Generado por: Diego Cuasapaz_  
 _Fecha de última actualización: 2026-02-04_  
