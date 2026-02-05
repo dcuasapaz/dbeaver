@@ -23,3 +23,6 @@ USE_SYSLOG="false"  # true para enviar a syslog
 # Versionado
 DATA_VERSION="1.0"
 METADATA_TABLE="dpa.metadata"
+
+# Logging en BD
+EXECUTION_LOG_TABLE="dpa.execution_logs"

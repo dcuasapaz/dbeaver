@@ -19,6 +19,26 @@ else
     exit 1
 fi
 
+# Crear tabla de logs de ejecución si no existe
+psql -U "$DB_USER" -d "$DB_NAME" -c "
+CREATE TABLE IF NOT EXISTS $EXECUTION_LOG_TABLE (
+    id SERIAL PRIMARY KEY,
+    execution_id INTEGER,
+    process_name TEXT,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    status TEXT,
+    details TEXT,
+    log_level TEXT,
+    message TEXT,
+    log_time TIMESTAMP
+);" 2>/dev/null || true
+
+# Iniciar registro de ejecución
+EXECUTION_ID=$(psql -U "$DB_USER" -d "$DB_NAME" -t -c "
+INSERT INTO $EXECUTION_LOG_TABLE (process_name, start_time, status, details) 
+VALUES ('$PROCESO', NOW(), 'STARTED', 'Carga de $2 en $1') RETURNING id;")
+
 # Función de logging mejorado
 log() {
     local level=$1
@@ -30,6 +50,11 @@ log() {
     if [ -n "$VAL_LOG" ]; then
         echo "$log_entry" >> "$VAL_LOG"
     fi
+    
+    # Insertar en BD
+    psql -U "$DB_USER" -d "$DB_NAME" -c "
+    INSERT INTO $EXECUTION_LOG_TABLE (execution_id, log_level, message, log_time) 
+    VALUES ($EXECUTION_ID, '$level', '$message', '$timestamp');" 2>/dev/null || true
     
     # Enviar a syslog si habilitado
     if [ "$USE_SYSLOG" = "true" ]; then
@@ -121,8 +146,18 @@ if [ $VAL_ETAPA -eq 5 ]; then
     VAL_CONTEO=$(psql -U "$VAL_USER" -d "$VAL_DB" -t -c "SELECT count(*) AS registrosCargados FROM $VAL_NAME_TABLE;")
     log "INFO" "Registros insertados: $VAL_CONTEO"
     log "INFO" "Finaliza ejecucion del proceso: $PROCESO"
+    # Actualizar registro de ejecución
+    psql -U "$DB_USER" -d "$DB_NAME" -c "
+    UPDATE $EXECUTION_LOG_TABLE 
+    SET end_time = NOW(), status = 'SUCCESS', details = 'Carga completada: $VAL_CONTEO registros' 
+    WHERE id = $EXECUTION_ID;" 2>/dev/null || true
     exit 0
 else
     log "ERROR" "Hubo un fallo en la conversión o carga del SHP."
+    # Actualizar registro de ejecución con error
+    psql -U "$DB_USER" -d "$DB_NAME" -c "
+    UPDATE $EXECUTION_LOG_TABLE 
+    SET end_time = NOW(), status = 'FAILED', details = 'Error en etapa $VAL_ETAPA' 
+    WHERE id = $EXECUTION_ID;" 2>/dev/null || true
     exit 1
 fi

@@ -191,6 +191,9 @@ Archivo `config.sh` centraliza parámetros como credenciales, rutas y opciones. 
 ### **Versionado de Datos**
 Tabla de metadata `$METADATA_TABLE` registra versiones, fechas de carga y fuentes de datos para rastreo de cambios.
 
+### **Logging en Base de Datos**
+Tabla `$EXECUTION_LOG_TABLE` almacena detalles de ejecución, logs y estados de procesos para auditoría completa.
+
 ### **Pruebas Automatizadas**
 Script `test_load.sh` valida conexiones, esquemas, índices y datos cargados, asegurando integridad del proceso.
 
