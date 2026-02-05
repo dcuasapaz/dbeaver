@@ -13,16 +13,16 @@
 #   alter_table: Alter table para agregar columnas faltantes
 
 # Cargar configuración
-CONFIG_FILE=$(dirname $(readlink -f $0))/config.sh
+CONFIG_FILE=${1:-$(dirname $(readlink -f $0))/../postgis_dpa/bin/config.sh}
 if [ -f "$CONFIG_FILE" ]; then
     . "$CONFIG_FILE"
 else
-    echo "ERROR: Archivo de configuración no encontrado"
+    echo "ERROR: Archivo de configuración no encontrado: $CONFIG_FILE"
     exit 1
 fi
 
-ACTION=$1
-shift
+ACTION=$2
+shift 2
 
 case $ACTION in
     create_table)

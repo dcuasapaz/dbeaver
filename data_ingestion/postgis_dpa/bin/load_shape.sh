@@ -20,12 +20,12 @@ else
 fi
 
 # Crear tabla de logs de ejecución si no existe
-$(dirname $(readlink -f $0))/log_execution.sh create_table
+psql -U "$DB_USER" -d "$DB_NAME" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_execution_logs.sql"
 
 # Iniciar registro de ejecución
 EXECUTION_ID=$$
 EXECUTION_START_TIME=$(date +%Y-%m-%d\ %H:%M:%S)
-$(dirname $(readlink -f $0))/log_execution.sh insert $EXECUTION_ID "$PROCESO" START "$VAL_SCHEMA" "$VAL_TABLE" "" "$EXECUTION_START_TIME" "" STARTED "Carga de $2 en $1"
+$(dirname $(dirname $(dirname $(readlink -f $0))))/utils/log_execution.sh $(dirname $(readlink -f $0))/config.sh insert $EXECUTION_ID "$PROCESO" START "$VAL_SCHEMA" "$VAL_TABLE" "" "$EXECUTION_START_TIME" "" STARTED "Carga de $2 en $1"
 
 # Función de logging mejorado
 log() {
@@ -106,7 +106,7 @@ if [ $VAL_ETAPA -eq 1 ]; then
 fi
 # 2. Ejecutar la carga con shp2pgsql
 if [ $VAL_ETAPA -eq 2 ]; then
-    $(dirname $(readlink -f $0))/log_execution.sh insert $EXECUTION_ID "$PROCESO" LOAD "$VAL_SCHEMA" "$VAL_TABLE" "" "$(date +%Y-%m-%d\ %H:%M:%S)" "" LOADING "Iniciando carga de Shapefile"
+    $(dirname $(dirname $(dirname $(readlink -f $0))))/utils/log_execution.sh $(dirname $(readlink -f $0))/config.sh insert $EXECUTION_ID "$PROCESO" LOAD "$VAL_SCHEMA" "$VAL_TABLE" "" "$(date +%Y-%m-%d\ %H:%M:%S)" "" LOADING "Iniciando carga de Shapefile"
     if [ "$DROP_TABLE" = "true" ]; then
         shp2pgsql -s $3 -d -I -W "$ENCODING" "$VAL_SHP_PATH" "$VAL_NAME_TABLE" | psql -U "$VAL_USER" -d "$VAL_DB" >>$VAL_LOG
     else
@@ -121,7 +121,8 @@ if [ $VAL_ETAPA -eq 3 ]; then
 fi
 # 4. Versionado de datos: Insertar metadata
 if [ $VAL_ETAPA -eq 4 ]; then
-    psql -U "$VAL_USER" -d "$VAL_DB" -c "CREATE TABLE IF NOT EXISTS $METADATA_TABLE (table_name TEXT, version TEXT, load_date TIMESTAMP, source_file TEXT);" >>$VAL_LOG
+    # Crear tabla de metadata si no existe
+    psql -U "$VAL_USER" -d "$VAL_DB" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_metadata.sql" >>$VAL_LOG
     psql -U "$VAL_USER" -d "$VAL_DB" -c "SET search_path TO dpa, public; INSERT INTO $METADATA_TABLE (table_name, version, load_date, source_file) VALUES ('$VAL_NAME_TABLE', '$DATA_VERSION', NOW(), '$VAL_SHP_PATH');" >>$VAL_LOG
     VAL_ETAPA=5
 fi
@@ -133,11 +134,11 @@ if [ $VAL_ETAPA -eq 5 ]; then
     log "INFO" "Registros insertados: $VAL_CONTEO"
     log "INFO" "Finaliza ejecucion del proceso: $PROCESO"
     # Insertar registro de finalización
-    $(dirname $(readlink -f $0))/log_execution.sh insert $EXECUTION_ID "$PROCESO" FINISH "$VAL_SCHEMA" "$VAL_TABLE" $VAL_CONTEO "$EXECUTION_START_TIME" "$(date +%Y-%m-%d\ %H:%M:%S)" SUCCESS "Carga completada"
+    $(dirname $(dirname $(dirname $(readlink -f $0))))/utils/log_execution.sh $(dirname $(readlink -f $0))/config.sh insert $EXECUTION_ID "$PROCESO" FINISH "$VAL_SCHEMA" "$VAL_TABLE" $VAL_CONTEO "$EXECUTION_START_TIME" "$(date +%Y-%m-%d\ %H:%M:%S)" SUCCESS "Carga completada"
     exit 0
 else
     log "ERROR" "Hubo un fallo en la conversión o carga del SHP."
     # Insertar registro de error
-    $(dirname $(readlink -f $0))/log_execution.sh insert $EXECUTION_ID "$PROCESO" FAILED "$VAL_SCHEMA" "$VAL_TABLE" "" "" "$(date +%Y-%m-%d\ %H:%M:%S)" FAILED "Error en etapa $VAL_ETAPA"
+    $(dirname $(dirname $(dirname $(readlink -f $0))))/utils/log_execution.sh $(dirname $(readlink -f $0))/config.sh insert $EXECUTION_ID "$PROCESO" FAILED "$VAL_SCHEMA" "$VAL_TABLE" "" "" "$(date +%Y-%m-%d\ %H:%M:%S)" FAILED "Error en etapa $VAL_ETAPA"
     exit 1
 fi

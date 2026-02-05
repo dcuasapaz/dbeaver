@@ -210,9 +210,10 @@ Script `test_load.sh` valida conexiones, esquemas, índices y datos cargados, as
 - **Por defecto**: Si no se pasan parámetros, prueba `dpa.ec_ecu_prv`
 
 ### **Logging Modular**
-Script `log_execution.sh` proporciona logging genérico reutilizable en otros subprocesos:
-- **Crear tabla**: `./log_execution.sh create_table`
-- **Insertar log**: `./log_execution.sh insert <execution_id> <process_name> <step> [parámetros...]`
+Script `utils/log_execution.sh` proporciona logging genérico reutilizable en otros subprocesos:
+- **Ubicación**: `data_ingestion/utils/log_execution.sh`
+- **Crear tabla**: `./utils/log_execution.sh [config_file] create_table`
+- **Insertar log**: `./utils/log_execution.sh [config_file] insert <execution_id> <process_name> <step> [parámetros...]`
 - **Reutilizable**: Cualquier subproceso puede usar este script para logging consistente
 
 ---
@@ -245,19 +246,26 @@ Además del cargador de Shapefiles, el repositorio incluye scripts SQL para oper
 dbeaver/
 ├── README.md                          # Este archivo
 └── data_ingestion/                    # Macroproyecto de ingesta de datos
-    └── postgis_dpa/                   # Subproceso DPA Ecuador
-        ├── bin/
-        │   └── load_shape.sh          # Script principal de carga
-        ├── Scripts/
-        │   ├── create_dpa_ecu.sql     # Setup DPA Ecuador
-        │   ├── postgis.sql            # Instalación PostGIS
+    ├── sql/                          # Scripts SQL genéricos
+    │   ├── create_execution_logs.sql # Creación tabla logs (genérico)
+    │   ├── create_metadata.sql       # Creación tabla metadata (genérico)
+    │   └── postgis.sql               # Instalación PostGIS (genérico)
+    ├── utils/                        # Scripts genéricos reutilizables
+    │   └── log_execution.sh          # Logging modular para BD
+    └── postgis_dpa/                  # Subproceso DPA Ecuador
+        ├── sql/                      # Scripts SQL específicos DPA
+        │   ├── create_dpa_ecu.sql    # Setup DPA Ecuador
         │   └── postgis_ecuador_continental.sql # Datos continentales
-        └── fnt/                       # Datos fuente (Shapefiles)
-            ├── DST_CRC/               # Distritos y Circunscripciones
-            ├── INEC2012/              # Censo 2012
+        ├── bin/
+        │   ├── load_shape.sh         # Script principal de carga
+        │   ├── test_load.sh          # Testing parametrizable
+        │   └── config.sh             # Configuración
+        └── fnt/                      # Datos fuente (Shapefiles)
+            ├── DST_CRC/              # Distritos y Circunscripciones
+            ├── INEC2012/             # Censo 2012
             │   ├── EcdCntSmp/
             │   └── EcdCntSmpGlp/
-            └── SHP/                   # Capas nacionales
+            └── SHP/                  # Capas nacionales
 ```
 
 ---
