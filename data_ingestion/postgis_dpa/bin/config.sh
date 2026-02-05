@@ -35,12 +35,12 @@ USE_SYSLOG="false"          # true: enviar logs a syslog del sistema
 # CONFIGURACIÓN DE VERSIONADO
 # =============================================================================
 DATA_VERSION="1.0"          # Versión de los datos
-METADATA_TABLE="dpa.metadata"  # Tabla para metadata de cargas
+METADATA_TABLE="dpa.dpa_metadata"  # Tabla para metadata de cargas
 
 # =============================================================================
 # CONFIGURACIÓN DE LOGGING EN BD
 # =============================================================================
-EXECUTION_LOG_TABLE="dpa.execution_logs"  # Tabla para logs de ejecución
+EXECUTION_LOG_TABLE="dpa.dpa_execution_logs"  # Tabla para logs de ejecución
 
 # =============================================================================
 # VALIDACIONES BÁSICAS

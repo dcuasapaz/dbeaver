@@ -20,7 +20,7 @@ else
 fi
 
 # Crear tabla de logs de ejecución si no existe
-psql -U "$DB_USER" -d "$DB_NAME" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_execution_logs.sql"
+psql -U "$DB_USER" -d "$DB_NAME" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_dpa_execution_logs.sql"
 
 # Iniciar registro de ejecución
 EXECUTION_ID=$$
@@ -122,7 +122,7 @@ fi
 # 4. Versionado de datos: Insertar metadata
 if [ $VAL_ETAPA -eq 4 ]; then
     # Crear tabla de metadata si no existe
-    psql -U "$VAL_USER" -d "$VAL_DB" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_metadata.sql" >>$VAL_LOG
+    psql -U "$VAL_USER" -d "$VAL_DB" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_dpa_metadata.sql" >>$VAL_LOG
     psql -U "$VAL_USER" -d "$VAL_DB" -v table_name="$VAL_NAME_TABLE" -v data_version="$DATA_VERSION" -v shp_path="$VAL_SHP_PATH" -f "$(dirname $(dirname $(readlink -f $0)))/sql/insert_metadata.sql" >>$VAL_LOG
     VAL_ETAPA=5
 fi

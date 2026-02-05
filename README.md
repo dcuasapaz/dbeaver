@@ -266,8 +266,8 @@ dbeaver/
 ├── README.md                          # Este archivo
 └── data_ingestion/                    # Macroproyecto de ingesta de datos
     ├── sql/                          # Scripts SQL genéricos
-    │   ├── create_execution_logs.sql # Creación tabla logs (genérico)
-    │   ├── create_metadata.sql       # Creación tabla metadata (genérico)
+    │   ├── create_dpa_execution_logs.sql # Creación tabla logs (genérico)
+    │   ├── create_dpa_metadata.sql       # Creación tabla metadata (genérico)
     │   ├── create_schema.sql         # Creación esquema (genérico)
     │   ├── vacuum_analyze.sql        # Optimización tabla (genérico)
     │   ├── count_records.sql         # Conteo registros (genérico)
