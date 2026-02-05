@@ -1,23 +1,27 @@
-# 📊 RESUMEN EJECUTIVO - PROCESO POSTGIS_DPA
-## Sistema DPA Ecuador - Versión 1.0
+# 📊 RESUMEN EJECUTIVO - MACROPROYECTO DATA_INGESTION
+## Sistema DPA Ecuador - Versión Macro: 1.0
 ## Fecha: 4 de febrero de 2026
 
 ---
 
-## 🏗️ **SISTEMA ORGANIZADO POR PROCESOS**
+## 🏗️ **MACROPROYECTO ORGANIZADO JERÁRQUICAMENTE**
 
-El sistema **PostGIS_DPA** está completamente refactorizado y organizado por procesos especializados:
+El sistema **Data_Ingestion** está completamente refactorizado y organizado de manera jerárquica:
 
-### **🔄 Procesos del Sistema:**
-1. **[⚙️ Configuración](procesos/postgis_dpa/configuracion/)** - Variables centralizadas
-2. **[📥 Carga de Datos](procesos/postgis_dpa/carga_datos/)** - Ingesta automatizada
-3. **[📊 Logging](procesos/postgis_dpa/logging/)** - Trazabilidad completa
-4. **[🧪 Testing](procesos/postgis_dpa/testing/)** - Validación automática
-5. **[📚 Documentación](procesos/postgis_dpa/documentacion/)** - Control de cambios
-
-### **📂 Estructura Documental:**
+### **📂 Estructura Jerárquica:**
 ```
-control_cambios/procesos/postgis_dpa/
+control_cambios/macroproyectos/data_ingestion/
+├── README.md                    # 📋 Información del macroproyecto
+└── proyectos/
+    └── postgis_dpa/            # 🗺️ Proyecto 1: PostGIS_DPA
+        ├── README.md           # 📝 Información del proyecto
+        └── procesos/           # 🔄 Procesos del proyecto
+            ├── configuracion/  # ⚙️ Configuración
+            ├── carga_datos/    # 📥 Ingesta de datos
+            ├── logging/        # 📊 Trazabilidad
+            ├── testing/        # 🧪 Validación
+            └── documentacion/  # 📚 Control de cambios
+```
 ├── README.md              # 📋 Índice principal
 ├── configuracion/         # ⚙️ Configuración
 ├── carga_datos/           # 📥 Carga de datos
