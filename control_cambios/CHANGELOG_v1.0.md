@@ -1,34 +1,35 @@
-# 📋 CONTROL DE CAMBIOS - PROCESO POSTGIS_DPA
-## Sistema DPA Ecuador - Versión 1.0
+# 📋 CONTROL DE CAMBIOS - MACROPROYECTO DATA_INGESTION
+## Sistema DPA Ecuador - Versión Macro: 1.0
 ## Fecha: 4 de febrero de 2026
 ## Autor: Diego Cuasapaz
 
 ---
 
-## 🏗️ **ORGANIZACIÓN POR PROCESOS**
+## 🏗️ **ORGANIZACIÓN JERÁRQUICA**
 
-La documentación de cambios está organizada por procesos del sistema **PostGIS_DPA**:
+La documentación de cambios está organizada de manera jerárquica para escalabilidad futura:
 
-### **📂 Estructura de Procesos:**
+### **📂 Estructura por Niveles:**
 ```
 control_cambios/
-├── procesos/
-│   └── postgis_dpa/
-│       ├── configuracion/     # ⚙️ Configuración del sistema
-│       ├── carga_datos/       # 📥 Ingesta de datos
-│       ├── logging/           # 📊 Trazabilidad
-│       ├── testing/           # 🧪 Validación
-│       └── documentacion/     # 📚 Control de cambios
-└── [archivos principales...]
+├── macroproyectos/
+│   └── data_ingestion/           # 🏗️ Nivel Macroproyecto
+│       ├── README.md            # 📋 Info del macroproyecto
+│       └── proyectos/
+│           └── postgis_dpa/      # 🗺️ Nivel Proyecto (Proyecto 1)
+│               ├── README.md    # 📝 Info del proyecto
+│               └── procesos/    # 🔄 Nivel Procesos
+│                   ├── configuracion/
+│                   ├── carga_datos/
+│                   ├── logging/
+│                   ├── testing/
+│                   └── documentacion/
 ```
 
-### **🔗 Acceso Rápido:**
-- **[📋 Índice de Procesos](procesos/postgis_dpa/README.md)** - Visión general completa
-- **[⚙️ Configuración](procesos/postgis_dpa/configuracion/)** - Variables y rutas
-- **[📥 Carga de Datos](procesos/postgis_dpa/carga_datos/)** - Scripts de ingesta
-- **[📊 Logging](procesos/postgis_dpa/logging/)** - Sistema de trazabilidad
-- **[🧪 Testing](procesos/postgis_dpa/testing/)** - Suite de pruebas
-- **[📚 Documentación](procesos/postgis_dpa/documentacion/)** - Control de cambios
+### **🔗 Navegación Jerárquica:**
+- **[📋 Macroproyecto Data_Ingestion](macroproyectos/data_ingestion/)** - Visión general del macroproyecto
+- **[🗺️ Proyecto PostGIS_DPA](macroproyectos/data_ingestion/proyectos/postgis_dpa/)** - Detalles del proyecto 1
+- **[🔄 Procesos PostGIS_DPA](macroproyectos/data_ingestion/proyectos/postgis_dpa/procesos/)** - Componentes detallados
 
 ---
 
