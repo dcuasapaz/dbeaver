@@ -4,7 +4,7 @@
 		"postgres-jdbc-19c299175d5-113e5f64e5ab4e64": {
 			"provider": "postgresql",
 			"driver": "postgres-jdbc",
-			"name": "postgres",
+			"name": "dcuasapaz",
 			"save-password": true,
 			"configuration": {
 				"host": "localhost",
@@ -21,7 +21,7 @@
 					"escapeSyntaxCallMode": "callIfNoReturn"
 				},
 				"provider-properties": {
-					"@dbeaver-show-non-default-db@": "false",
+					"@dbeaver-show-non-default-db@": "true",
 					"@dbeaver-chosen-role@": "",
 					"@dbeaver-show-template-db@": "false",
 					"@dbeaver-show-unavailable-db@": "false",
@@ -34,9 +34,13 @@
 					"postgresql.dd.tag.string": "false"
 				},
 				"auth-model": "native"
+			},
+			"custom-properties": {
+				"gis.geometry.viewer.id": "browser"
 			}
 		}
 	},
+	"virtual-models": {"postgres-jdbc-19c299175d5-113e5f64e5ab4e64":{"dpa_ecu":{"dpa":{":ec_periferia":{"attributes":{"geom":{"properties":{"gis.flipCoords":"false","gis.srid":"3857"}}}}}}}},
 	"connection-types": {
 		"dev": {
 			"name": "Development",

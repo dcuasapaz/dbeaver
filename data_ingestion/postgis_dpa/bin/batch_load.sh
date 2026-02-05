@@ -17,7 +17,23 @@ VAL_LOG=$VAL_RUTA_LOG/$PROCESO"_"$VAL_DIA"_"$VAL_HORA.log
 
 echo `date '+%Y-%m-%d %H:%M:%S'`" INFO: Iniciando carga automática de todos los Shapefiles" >>$VAL_LOG
 
-# Función para determinar SRID basado en subdirectorio
+# Cargar configuración
+CONFIG_FILE="$VAL_RUTA/config.sh"
+if [ -f "$CONFIG_FILE" ]; then
+    . "$CONFIG_FILE"
+else
+    echo "ERROR: Archivo de configuración $CONFIG_FILE no encontrado" >>$VAL_LOG
+    exit 1
+fi
+
+# Crear tablas de logs si no existen
+psql -U "$DB_USER" -d "$DB_NAME" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_dpa_execution_logs.sql" >>$VAL_LOG 2>&1
+psql -U "$DB_USER" -d "$DB_NAME" -f "$(dirname $(dirname $(dirname $(readlink -f $0))))/sql/create_dpa_metadata.sql" >>$VAL_LOG 2>&1
+
+# Iniciar registro de ejecución del batch
+BATCH_EXECUTION_ID=$$
+BATCH_START_TIME=$(date +%Y-%m-%d\ %H:%M:%S)
+$(dirname $(dirname $(dirname $(readlink -f $0))))/utils/log_execution.sh "$CONFIG_FILE" insert $BATCH_EXECUTION_ID "BATCH_LOAD_DPA" START "" "" "" "$BATCH_START_TIME" "" STARTED "Inicio carga automática de todos los Shapefiles"
 get_srid() {
     local subdir=$1
     case $subdir in
@@ -64,5 +80,9 @@ find "$FNT_DIR" -name "*.shp" -type f | while read -r shp_file; do
     
     echo `date '+%Y-%m-%d %H:%M:%S'`" INFO: $TABLE cargado exitosamente" >>$VAL_LOG
 done
+
+# Finalizar registro de ejecución del batch
+BATCH_END_TIME=$(date +%Y-%m-%d\ %H:%M:%S)
+$(dirname $(dirname $(dirname $(readlink -f $0))))/utils/log_execution.sh "$CONFIG_FILE" insert $BATCH_EXECUTION_ID "BATCH_LOAD_DPA" FINISH "" "" "" "$BATCH_START_TIME" "$BATCH_END_TIME" SUCCESS "Carga automática completada"
 
 echo `date '+%Y-%m-%d %H:%M:%S'`" INFO: Carga automática completada" >>$VAL_LOG

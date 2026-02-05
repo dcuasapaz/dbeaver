@@ -9,8 +9,8 @@
 			"configuration": {
 				"host": "localhost",
 				"port": "5432",
-				"database": "postgres",
-				"url": "jdbc:postgresql://localhost:5432/postgres",
+				"database": "dcuasapaz",
+				"url": "jdbc:postgresql://localhost:5432/dcuasapaz",
 				"configurationType": "MANUAL",
 				"home": "/usr/lib/postgresql/16",
 				"type": "dev",
@@ -40,7 +40,7 @@
 			}
 		}
 	},
-	"virtual-models": {"postgres-jdbc-19c299175d5-113e5f64e5ab4e64":{"dpa_ecu":{"dpa":{":ec_periferia":{"attributes":{"geom":{"properties":{"gis.flipCoords":"false","gis.srid":"3857"}}}}}}}},
+	"virtual-models": {"postgres-jdbc-19c299175d5-113e5f64e5ab4e64":{"dpa_ecu":{"dpa":{":ec_periferia":{"attributes":{"geom":{"properties":{"gis.flipCoords":"false","gis.srid":"3857"}}}},":ec_ecu_nxprovincias":{"attributes":{"geom":{"properties":{"gis.flipCoords":"false","gis.srid":"3395"}}}}}}}},
 	"connection-types": {
 		"dev": {
 			"name": "Development",
