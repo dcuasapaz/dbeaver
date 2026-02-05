@@ -25,18 +25,24 @@ CREATE TABLE IF NOT EXISTS $EXECUTION_LOG_TABLE (
     id SERIAL PRIMARY KEY,
     execution_id INTEGER,
     process_name TEXT,
+    step TEXT,
+    schema_name TEXT,
+    table_name TEXT,
+    records_count INTEGER,
     start_time TIMESTAMP,
     end_time TIMESTAMP,
     status TEXT,
     details TEXT,
-    log_level TEXT,
-    message TEXT,
     log_time TIMESTAMP
-);" 2>/dev/null || true
+);
+ALTER TABLE $EXECUTION_LOG_TABLE ADD COLUMN IF NOT EXISTS step TEXT;
+ALTER TABLE $EXECUTION_LOG_TABLE ADD COLUMN IF NOT EXISTS schema_name TEXT;
+ALTER TABLE $EXECUTION_LOG_TABLE ADD COLUMN IF NOT EXISTS table_name TEXT;
+ALTER TABLE $EXECUTION_LOG_TABLE ADD COLUMN IF NOT EXISTS records_count INTEGER;" 2>/dev/null || true
 
 # Iniciar registro de ejecución
 EXECUTION_ID=$$
-psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; INSERT INTO $EXECUTION_LOG_TABLE (execution_id, process_name, start_time, status, details) VALUES ($EXECUTION_ID, '$PROCESO', NOW(), 'STARTED', 'Carga de $2 en $1');"
+psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; INSERT INTO $EXECUTION_LOG_TABLE (execution_id, process_name, step, schema_name, table_name, start_time, status, details) VALUES ($EXECUTION_ID, '$PROCESO', 'START', '$VAL_SCHEMA', '$VAL_TABLE', NOW(), 'STARTED', 'Carga de $2 en $1');"
 
 # Función de logging mejorado
 log() {
@@ -50,8 +56,7 @@ log() {
         echo "$log_entry" >> "$VAL_LOG"
     fi
     
-    # Insertar en BD
-    psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; INSERT INTO $EXECUTION_LOG_TABLE (execution_id, log_level, message, log_time) VALUES ($EXECUTION_ID, '$level', '$message', '$timestamp');" 2>/dev/null || true
+    # Logs detallados solo en archivo, no en BD para evitar múltiples registros
     
     # Enviar a syslog si habilitado
     if [ "$USE_SYSLOG" = "true" ]; then
@@ -118,6 +123,7 @@ if [ $VAL_ETAPA -eq 1 ]; then
 fi
 # 2. Ejecutar la carga con shp2pgsql
 if [ $VAL_ETAPA -eq 2 ]; then
+    psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; INSERT INTO $EXECUTION_LOG_TABLE (execution_id, process_name, step, schema_name, table_name, start_time, status, details) VALUES ($EXECUTION_ID, '$PROCESO', 'LOAD', '$VAL_SCHEMA', '$VAL_TABLE', NOW(), 'LOADING', 'Iniciando carga de Shapefile');" 2>/dev/null || true
     if [ "$DROP_TABLE" = "true" ]; then
         shp2pgsql -s $3 -d -I -W "$ENCODING" "$VAL_SHP_PATH" "$VAL_NAME_TABLE" | psql -U "$VAL_USER" -d "$VAL_DB" >>$VAL_LOG
     else
@@ -143,12 +149,12 @@ if [ $VAL_ETAPA -eq 5 ]; then
     VAL_CONTEO=$(psql -U "$VAL_USER" -d "$VAL_DB" -t -c "SELECT count(*) AS registrosCargados FROM $VAL_NAME_TABLE;")
     log "INFO" "Registros insertados: $VAL_CONTEO"
     log "INFO" "Finaliza ejecucion del proceso: $PROCESO"
-    # Actualizar registro de ejecución
-    psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; UPDATE $EXECUTION_LOG_TABLE SET end_time = NOW(), status = 'SUCCESS', details = 'Carga completada: $VAL_CONTEO registros' WHERE execution_id = $EXECUTION_ID;" 2>/dev/null || true
+    # Insertar registro de finalización
+    psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; INSERT INTO $EXECUTION_LOG_TABLE (execution_id, process_name, step, schema_name, table_name, records_count, end_time, status, details) VALUES ($EXECUTION_ID, '$PROCESO', 'FINISH', '$VAL_SCHEMA', '$VAL_TABLE', $VAL_CONTEO, NOW(), 'SUCCESS', 'Carga completada');" 2>/dev/null || true
     exit 0
 else
     log "ERROR" "Hubo un fallo en la conversión o carga del SHP."
-    # Actualizar registro de ejecución con error
-    psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; UPDATE $EXECUTION_LOG_TABLE SET end_time = NOW(), status = 'FAILED', details = 'Error en etapa $VAL_ETAPA' WHERE id = $EXECUTION_ID;" 2>/dev/null || true
+    # Insertar registro de error
+    psql -U "$DB_USER" -d "$DB_NAME" -c "SET search_path TO dpa, public; INSERT INTO $EXECUTION_LOG_TABLE (execution_id, process_name, step, schema_name, table_name, end_time, status, details) VALUES ($EXECUTION_ID, '$PROCESO', 'FAILED', '$VAL_SCHEMA', '$VAL_TABLE', NOW(), 'FAILED', 'Error en etapa $VAL_ETAPA');" 2>/dev/null || true
     exit 1
 fi

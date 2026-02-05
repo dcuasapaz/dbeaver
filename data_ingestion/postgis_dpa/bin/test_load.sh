@@ -74,7 +74,7 @@ log "INFO" "Prueba 6: Tabla de logs de ejecución $EXECUTION_LOG_TABLE"
 if psql -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1 FROM $EXECUTION_LOG_TABLE LIMIT 1;" > /dev/null 2>&1; then
     log "PASS" "Tabla de logs de ejecución existe"
     # Mostrar últimas ejecuciones
-    psql -U "$DB_USER" -d "$DB_NAME" -c "SELECT id, execution_id, process_name, start_time, end_time, status, details, log_level, message FROM $EXECUTION_LOG_TABLE ORDER BY id DESC LIMIT 10;" -t | while read line; do
+    psql -U "$DB_USER" -d "$DB_NAME" -c "SELECT id, execution_id, process_name, step, schema_name, table_name, records_count, start_time, end_time, status, details, log_time FROM $EXECUTION_LOG_TABLE ORDER BY id DESC LIMIT 10;" -t | while read line; do
         log "INFO" "Registro: $line"
     done
 else
